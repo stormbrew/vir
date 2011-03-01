@@ -69,14 +69,33 @@ describe Vir::Parser do
 				parser.parse('blah do: {} else: {}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[], :name=>{:symbol=>"do"}}}, {:block=>{:lines=>[], :name=>{:symbol=>"else"}}}]}, :doc=>[]}}
 			end
 
-			it 'should allow for statements within the block' do
+			it 'with statements within the block' do
 				parser.parse('blah do: { stuff }').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
 			end
 
-			it 'should work with a multiline block' do
+			it 'with multiple statements within the block separated by semicolon' do
+				parser.parse('blah do: { stuff; more_stuff }').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}, {:statement=>{:doc=>[], :symbol=>"more_stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
+			end
+
+			it 'with a statement within the block but on different lines' do
 				parser.parse('blah do: {
 				stuff
 				}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
+			end
+
+			it 'with multiple statements on separate lines' do
+				parser.parse('blah do: {
+				stuff
+				more_stuff
+				}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}, {:statement=>{:doc=>[], :symbol=>"more_stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
+			end
+
+			it 'with multiple statements on separate lines ignores empty lines' do
+				parser.parse('blah do: {
+				stuff
+
+				more_stuff
+				}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}, {:statement=>{:doc=>[], :symbol=>"more_stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
 			end
 		end
 	end

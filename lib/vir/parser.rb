@@ -80,12 +80,8 @@ module Vir
       str('(') >> ws? >> args.maybe >> ws? >> str(')')
     }
 
-    rule(:execlist) {
-      statement.repeat.as(:lines)
-    }
-
     rule(:blockbody) {
-      str('{') >> all_ws.maybe >> execlist.maybe >> all_ws.maybe >> str('}')
+      str('{') >> all_ws.maybe >> statement.repeat.as(:lines) >> all_ws.maybe >> str('}')
     }
 
     rule(:block) {
@@ -160,7 +156,7 @@ module Vir
     }
 
     rule(:statement) {
-      (comment.repeat.as(:doc) >> ws? >> expression).as(:statement) >> br.maybe
+      (comment.repeat.as(:doc) >> ws? >> expression).as(:statement) >> (ws? >> (br | str(';'))).repeat
     }
 
     # A 'script' in vir always has exactly one statement. The result of this
