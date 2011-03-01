@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+# test mode:
+if ($0 == 'bin/vir')
+  $LOAD_PATH << 'lib' 
+  require 'rubygems'
+  require 'bundler/setup'
+end
+
+require 'pp'
+require 'user_input/option_parser'
+
+require 'vir/version'
+require 'vir/parser'
+
+options = UserInput::OptionParser.new do |c|
+  c.argument 'e', 'eval', "Code to evaluate", nil, String
+  c.gap
+  c.flag 'v', 'version', "Print version" do
+    puts(Vir::VERSION.join('.'))
+    exit(1)
+  end
+  c.flag 'h', 'help', "Print help" do
+    puts(c)
+    exit(1)
+  end
+end
+options.parse!(ARGV)
+
+def parse(str)
+  parser = Vir::Parser.new
+  begin
+    pp(parser.parse(str))
+  rescue Parslet::ParseFailed => m
+    puts parser.root.error_tree
+  end
+end
+pp(options.eval)
+if (options.eval)
+  parse(options.eval)
+elsif (ARGV.length > 0)
+  ARGV.each do |f|
+    parse(f)
+  end
+end
