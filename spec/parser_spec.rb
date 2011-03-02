@@ -24,6 +24,28 @@ describe Vir::Parser do
 		end
 	end
 
+	describe 'parses a variable reference' do
+		it 'to the local scope' do
+			parser.parse('$blah').should == {:statement=>{:local_var=>{:name=>'blah'}, :doc=>[]}}
+		end
+
+		it 'to self' do
+			parser.parse('@').should == {:statement=>{:self=>'@', :doc=>[]}}
+		end
+
+		it 'to module self' do
+			parser.parse('@@').should == {:statement=>{:mod_self=>'@@', :doc=>[]}}
+		end
+
+		it 'to instance scope' do
+			parser.parse('@blah').should == {:statement=>{:instance_var=>{:name=>'blah'}, :doc=>[]}}
+		end
+
+		it 'to module (global) scope' do
+			parser.parse('@@blah').should == {:statement=>{:module_var=>{:name=>'blah'}, :doc=>[]}}
+		end
+	end
+
 	describe 'parses a call' do
 		it 'that has no arguments and no target' do
 			parser.parse('call()').should == {:statement=>{:call=>{:blocks=>[], :ref=>{:name=>"call"}}, :doc=>[]}}
