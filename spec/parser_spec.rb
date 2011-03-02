@@ -48,6 +48,10 @@ describe Vir::Parser do
 			parser.parse('blah.call(1,2,3)').should == {:statement=>{:call=>{:ref=>{:on=>{:symbol=>"blah"}, :name=>"call"}, :args=>[{:integer=>"1"}, {:integer=>"2"}, {:integer=>"3"}], :blocks=>[]}, :doc=>[]}}
 		end
 
+		it 'to a variable' do
+			parser.parse('$x(1,2,3)').should == {:statement=>{:call=>{:ref=>{:on=>{:local_var=>{:name=>"x"}}}, :args=>[{:integer=>"1"}, {:integer=>"2"}, {:integer=>"3"}], :blocks=>[]}, :doc=>[]}}
+		end
+
 		describe 'with a block' do
 			it 'that takes no arguments, has no brackets' do
 				parser.parse('blah do: {}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
