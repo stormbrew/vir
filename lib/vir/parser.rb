@@ -96,6 +96,7 @@ module Vir
     rule(:call_expression) {
       (((call_expression | unary_expression).as(:on) >> ws? >> str('.') >> ws? >> symbol.as(:name)).as(:ref) >> call_args.maybe).as(:call) |
       (symbol.as(:name).as(:ref) >> ws? >> call_args).as(:call) |
+      (unary_expression.as(:on).as(:ref) >> ws? >> call_args).as(:call) |
       unary_expression
     }
 
