@@ -156,7 +156,8 @@ module Vir
     }
 
     rule(:statement) {
-      (comment.repeat.as(:doc) >> ws? >> expression).as(:statement) >> (ws? >> (br | str(';'))).repeat
+      ((ws? >> comment).repeat.as(:doc) >> ws? >> expression).as(:statement) >> (ws? >> (br | str(';'))).repeat |
+      comment.repeat(1).as(:comment)
     }
 
     # A 'script' in vir always has exactly one statement. The result of this

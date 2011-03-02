@@ -100,4 +100,20 @@ describe Vir::Parser do
 		end
 	end
 
+	describe 'parses comments' do
+		it 'before a statement as documentation for that statement' do
+			parser.parse('#blah
+			blorp').should == {:statement=>{:doc=>[{:text=>"blah"}], :symbol=>"blorp"}}
+		end
+
+		it 'multiple times before a statement as documentation for that statement' do
+			parser.parse('#blah
+			#zoop
+			blorp').should == {:statement=>{:doc=>[{:text=>"blah"}, {:text=>"zoop"}], :symbol=>"blorp"}}
+		end
+		
+		it 'on its own is just treated as a comment' do
+			parser.parse('#blah').should == {:comment=>[{:text=>'blah'}]}
+		end
+	end
 end
