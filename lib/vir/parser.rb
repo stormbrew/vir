@@ -156,6 +156,8 @@ module Vir
     }
 
     rule(:call_expression) {
+      ((call_expression | value_expression).as(:from) >> (lws? >> str('[') >> iws? >> expression >> iws? >> str(']')).repeat(1).as(:index)).as(:array_op) |
+
       ((call_expression.as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
       ((value_expression.as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
       (symbol.as(:name).as(:ref) >> lws? >> call_args).as(:call) |
@@ -163,14 +165,9 @@ module Vir
       value_expression
     }
 
-    rule(:array_index_expression) {
-      (call_expression.as(:from) >> (lws? >> str('[') >> iws? >> expression >> iws? >> str(']')).repeat(1).as(:index)).as(:array_op) |
-      call_expression
-    }
-
     rule(:product_op_expression) {
-      (array_index_expression >> (lws? >> (str('*') | str('/') | str('%')).as(:op) >> iws? >> array_index_expression).repeat(1)).as(:product) |
-      array_index_expression
+      (call_expression >> (lws? >> (str('*') | str('/') | str('%')).as(:op) >> iws? >> call_expression).repeat(1)).as(:product) |
+      call_expression
     }
 
     rule(:sum_op_expression) {
@@ -204,7 +201,7 @@ module Vir
     }
 
     rule(:range_expression) {
-      (logical_op_expression.as(:low) >> (str('..') | str('...')).as(:op) >> logical_op_expression.as(:high)).as(:range) |
+      (logical_op_expression.as(:low) >> (str('...') | str('..')).as(:op) >> logical_op_expression.as(:high)).as(:range) |
       logical_op_expression
     }
 
