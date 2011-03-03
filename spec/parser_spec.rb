@@ -137,9 +137,5 @@ describe Vir::Parser do
 			#zoop
 			blorp').should == {:statement=>{:doc=>[{:text=>"blah"}, {:text=>"zoop"}], :symbol=>"blorp"}}
 		end
-		
-		it 'on its own is just treated as a comment' do
-			parser.parse('#blah').should == {:comment=>[{:text=>'blah'}]}
-		end
 	end
 end
