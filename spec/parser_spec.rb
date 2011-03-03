@@ -113,6 +113,16 @@ describe Vir::Parser do
 				it 'that has multiple names in it' do
 					parser.parse('blah:(name1, name2) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:name=>"name1"}, {:name=>"name2"}]}}]}}}
 				end
+
+				it 'that has an argument with a *prefix (splat)' do
+					parser.parse('blah:(*splat) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'*', :name=>"splat"}]}}]}}}
+				end
+				it 'that has an argument with a **prefix (hashsplat)' do
+					parser.parse('blah:(**hashsplat) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'**', :name=>"hashsplat"}]}}]}}}
+				end
+				it 'that has an argument with a &prefix (messagesplat)' do
+					parser.parse('blah:(&msg) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'&', :name=>"msg"}]}}]}}}
+				end
 			end
 
 			it 'with statements within the block' do
