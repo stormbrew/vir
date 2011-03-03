@@ -95,45 +95,41 @@ describe Vir::Parser do
 				parser.parse('blah do: {} else: {}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[], :name=>{:symbol=>"do"}}}, {:block=>{:lines=>[], :name=>{:symbol=>"else"}}}]}, :doc=>[]}}
 			end
 
-			it 'with a default block' do
-				parser.parse('blah: {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[]}}]}}}
-			end
-
-			it 'with a default block and a named block' do
-				parser.parse('blah: {} else: {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[]}}, {:block=>{:name=>{:symbol=>"else"}, :lines=>[]}}]}}}
+			it 'with an expression as a block name' do
+				parser.parse('blah 1+1: {}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[], :name=>{:sum=>[{:integer=>"1"}, {:op=>"+", :integer=>"1"}]}}}]}, :doc=>[]}}
 			end
 
 			describe 'with a block argument list' do
 				it 'that is empty' do
-					parser.parse('blah:() {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[]}}]}}}
+					parser.parse('blah do:() {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[]}}]}}}
 				end
 				it 'that has a single name in it' do
-					parser.parse('blah:(name1) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:name=>"name1"}]}}]}}}
+					parser.parse('blah do:(name1) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:name=>"name1"}]}}]}}}
 				end
 				it 'that has multiple names in it' do
-					parser.parse('blah:(name1, name2) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:name=>"name1"}, {:name=>"name2"}]}}]}}}
+					parser.parse('blah do:(name1, name2) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:name=>"name1"}, {:name=>"name2"}]}}]}}}
 				end
 
 				it 'that has an argument with a *prefix (splat)' do
-					parser.parse('blah:(*splat) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'*', :name=>"splat"}]}}]}}}
+					parser.parse('blah do:(*splat) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:prefix=>'*', :name=>"splat"}]}}]}}}
 				end
 				it 'that has an argument with a **prefix (hashsplat)' do
-					parser.parse('blah:(**hashsplat) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'**', :name=>"hashsplat"}]}}]}}}
+					parser.parse('blah do:(**hashsplat) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:prefix=>'**', :name=>"hashsplat"}]}}]}}}
 				end
 				it 'that has an argument with a &prefix (messagesplat)' do
-					parser.parse('blah:(&msg) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'&', :name=>"msg"}]}}]}}}
+					parser.parse('blah do:(&msg) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:prefix=>'&', :name=>"msg"}]}}]}}}
 				end
 
 				it 'that has an argument with a default value' do
-					parser.parse('blah:(arg: 10) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:default=>{:integer=>"10"}, :name=>"arg"}]}}]}}}
+					parser.parse('blah do:(arg: 10) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:default=>{:integer=>"10"}, :name=>"arg"}]}}]}}}
 				end
 
 				it 'that has an argument with a typespec' do
-					parser.parse('blah:(arg as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:type=>{:symbol=>"integer"}, :name=>"arg"}]}}]}}}
+					parser.parse('blah do:(arg as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :lines=>[], :args=>[{:type=>{:symbol=>"integer"}, :name=>"arg"}]}}]}}}
 				end
 
 				it 'that has an argument with a default value and typespec' do
-					parser.parse('blah:(arg:10 as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:args=>[{:name=>"arg", :default=>{:integer=>"10"}, :type=>{:symbol=>"integer"}}], :lines=>[]}}]}}}
+					parser.parse('blah do:(arg:10 as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :args=>[{:name=>"arg", :default=>{:integer=>"10"}, :type=>{:symbol=>"integer"}}], :lines=>[]}}]}}}
 				end
 
 			end

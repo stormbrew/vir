@@ -97,10 +97,10 @@ module Vir
     }
 
     rule(:prefix_op_expression) {
-      ((str('!') | str('+') | str('-') | str('~')).as(:op) >> iws? >> unary_expression).as(:prefix_op)
+      ((str('!') | str('+') | str('-') | str('~')).as(:op) >> iws? >> call_expression).as(:prefix_op)
     }
 
-    rule(:unary_expression) {
+    rule(:value_expression) {
       (str('(') >> iws? >> expression >> iws? >> str(')')) |
       prefix_op_expression | const | variable
     }
@@ -143,27 +143,24 @@ module Vir
       block_args.maybe >> iws? >> str('{') >> eol.maybe >> statement_sequence.repeat(0,1).as(:lines) >> iws? >> str('}')
     }
 
-    rule(:named_block) {
-      (unary_expression.as(:name) >> iws? >> str(':') >> iws? >> block_body).as(:block)
-    }
-    rule(:default_block) {
-      (str(':') >> iws? >> block_body).as(:default_block)
-    }
-    rule(:blocks) {
-      (default_block >> lws? >> (named_block >> lws?).repeat) |
-      (named_block >> lws?).repeat(1)
+    rule(:block) {
+      (expression.as(:name) >> lws? >> str(':') >> iws? >> block_body >> lws?).as(:block)
     }
 
+    rule(:call_args_with_arglist) {
+      arglist >> lws? >> block.repeat.as(:blocks)
+    }
     rule(:call_args) {
-      arglist >> lws? >> blocks.repeat(0,1).as(:blocks) |
-      blocks.repeat(1,1).as(:blocks)
+      call_args_with_arglist |
+      block.repeat(1).as(:blocks)
     }
 
     rule(:call_expression) {
-      (((call_expression | unary_expression).as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
+      ((call_expression.as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
+      ((value_expression.as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
       (symbol.as(:name).as(:ref) >> lws? >> call_args).as(:call) |
-      (unary_expression.as(:on).as(:ref) >> lws? >> call_args).as(:call) |
-      unary_expression
+      (value_expression.as(:on).as(:ref) >> lws? >> call_args_with_arglist).as(:call) |
+      value_expression
     }
 
     rule(:array_index_expression) {
