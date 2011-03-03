@@ -95,6 +95,14 @@ describe Vir::Parser do
 				parser.parse('blah do: {} else: {}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[], :name=>{:symbol=>"do"}}}, {:block=>{:lines=>[], :name=>{:symbol=>"else"}}}]}, :doc=>[]}}
 			end
 
+			it 'with a default block' do
+				parser.parse('blah: {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[]}}]}}}
+			end
+
+			it 'with a default block and a named block' do
+				parser.parse('blah: {} else: {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[]}}, {:block=>{:name=>{:symbol=>"else"}, :lines=>[]}}]}}}
+			end
+
 			it 'with statements within the block' do
 				parser.parse('blah do: { stuff }').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
 			end
