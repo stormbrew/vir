@@ -127,15 +127,58 @@ describe Vir::Parser do
 	end
 
 	describe 'parses comments' do
-		it 'before a statement as documentation for that statement' do
-			parser.parse('#blah
-			blorp').should == {:statement=>{:doc=>[{:text=>"blah"}], :symbol=>"blorp"}}
+		describe 'that start with #' do
+			it 'before a statement as documentation for that statement' do
+				parser.parse('#blah
+				blorp').should == {:statement=>{:doc=>[{:text=>"blah"}], :symbol=>"blorp"}}
+			end
+
+			it 'within a statement as inline comments as part of that statement' do
+				parser.parse('blorp + #blah
+				zoop').should == {:statement=>{:doc=>[], :sum=>[{:symbol=>"blorp"}, {:op=>"+"}, {:inline_doc=>{:text=>"blah"}}, {:symbol=>"zoop"}]}}
+			end
+		end
+
+		describe 'that start with //' do
+			it 'before a statement as documentation for that statement' do
+				parser.parse('//blah
+				blorp').should == {:statement=>{:doc=>[{:text=>"blah"}], :symbol=>"blorp"}}
+			end
+
+			it 'within a statement as inline comments as part of that statement' do
+				parser.parse('blorp + //blah
+				zoop').should == {:statement=>{:doc=>[], :sum=>[{:symbol=>"blorp"}, {:op=>"+"}, {:inline_doc=>{:text=>"blah"}}, {:symbol=>"zoop"}]}}
+			end
+		end
+
+		describe 'that start with /*' do
+			it 'before a statement as documentation for that statement' do
+				parser.parse('/*blah*/
+				blorp').should == {:statement=>{:doc=>[{:text=>"blah"}], :symbol=>"blorp"}}
+			end
+			it 'before a statement that is on multiple lines as documentation for that statement' do
+				parser.parse('/*blah
+				blorp
+				zoop */
+				blorp').should == {:statement=>{:doc=>[{:text=>"blah\n\t\t\t\tblorp\n\t\t\t\tzoop "}], :symbol=>"blorp"}}
+			end
+
+			it 'within a statement as inline comments as part of that statement' do
+				parser.parse('blorp + /*blah*/ zoop').should == {:statement=>{:doc=>[], :sum=>[{:symbol=>"blorp"}, {:op=>"+"}, {:inline_doc=>{:text=>"blah"}}, {:symbol=>"zoop"}]}}
+				parser.parse('blorp + /*blah*/
+				zoop').should == {:statement=>{:doc=>[], :sum=>[{:symbol=>"blorp"}, {:op=>"+"}, {:inline_doc=>{:text=>"blah"}}, {:symbol=>"zoop"}]}}
+			end
+			it 'within a statement on multiple lines as inline comments as part of that statement' do
+				parser.parse('blorp + /*blah
+				blorp*/ zoop').should == {:statement=>{:doc=>[], :sum=>[{:symbol=>"blorp"}, {:op=>"+"}, {:inline_doc=>{:text=>"blah\n\t\t\t\tblorp"}}, {:symbol=>"zoop"}]}}
+			end
 		end
 
 		it 'multiple times before a statement as documentation for that statement' do
 			parser.parse('#blah
-			#zoop
-			blorp').should == {:statement=>{:doc=>[{:text=>"blah"}, {:text=>"zoop"}], :symbol=>"blorp"}}
+			//zoop
+			/*doop*/
+			blorp').should == {:statement=>{:doc=>[{:text=>"blah"}, {:text=>"zoop"}, {:text=>'doop'}], :symbol=>"blorp"}}
 		end
 	end
 end
