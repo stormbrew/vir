@@ -203,9 +203,14 @@ module Vir
       bitwise_op_expression
     }
 
-    rule(:assignment_expression) {
-      (logical_op_expression >> (lws? >> (str('=') | str('+=') | str('-=') | str('*=') | str('/=') | str('%=') | str('&=') | str('^=') | str('|=') | str('<<=') | str('>>=')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:assign) |
+    rule(:range_expression) {
+      (logical_op_expression.as(:low) >> (str('..') | str('...')).as(:op) >> logical_op_expression.as(:high)).as(:range) |
       logical_op_expression
+    }
+
+    rule(:assignment_expression) {
+      (range_expression >> (lws? >> (str('=') | str('+=') | str('-=') | str('*=') | str('/=') | str('%=') | str('&=') | str('^=') | str('|=') | str('<<=') | str('>>=')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:assign) |
+      range_expression
     }
 
     rule(:expression) {
