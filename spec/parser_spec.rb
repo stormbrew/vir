@@ -103,6 +103,18 @@ describe Vir::Parser do
 				parser.parse('blah: {} else: {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[]}}, {:block=>{:name=>{:symbol=>"else"}, :lines=>[]}}]}}}
 			end
 
+			describe 'with a block argument list' do
+				it 'that is empty' do
+					parser.parse('blah:() {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[]}}]}}}
+				end
+				it 'that has a single name in it' do
+					parser.parse('blah:(name1) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:name=>"name1"}]}}]}}}
+				end
+				it 'that has multiple names in it' do
+					parser.parse('blah:(name1, name2) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:name=>"name1"}, {:name=>"name2"}]}}]}}}
+				end
+			end
+
 			it 'with statements within the block' do
 				parser.parse('blah do: { stuff }').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
 			end
