@@ -119,15 +119,15 @@ module Vir
       ews? >> tail_statement
     }
 
-    rule(:block_simple_comma_arg) {
-      (symbol.as(:name) >> iws? >> str(',') >> iws?)
+    rule(:block_arg) {
+      ((str('**') | str('*') | str('&')).as(:prefix).maybe >> symbol.as(:name) >> iws?)
     }
-    rule(:block_simple_tail_arg) {
-      (symbol.as(:name) >> iws?)
+    rule(:block_comma_arg) {
+      (block_arg >> str(',') >> iws?)
     }
 
     rule(:block_args) {
-      str('(') >> iws? >> (block_simple_comma_arg.repeat >> block_simple_tail_arg).repeat(0,1).as(:args) >> str(')')
+      str('(') >> iws? >> (block_comma_arg.repeat >> block_arg).repeat(0,1).as(:args) >> str(')')
     }
 
     rule(:block_body) {
