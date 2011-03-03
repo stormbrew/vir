@@ -195,6 +195,11 @@ module Vir
       bitwise_op_expression
     }
 
+    rule(:assignment_expression) {
+      (logical_op_expression >> (iws? >> (str('=') | str('+=') | str('-=') | str('*=') | str('/=') | str('%=') | str('&=') | str('^=') | str('|=') | str('<<=') | str('>>=')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:assign) |
+      logical_op_expression
+    }
+
     rule(:expression) {
       logical_op_expression
     }
