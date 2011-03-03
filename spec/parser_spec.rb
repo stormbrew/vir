@@ -123,6 +123,10 @@ describe Vir::Parser do
 				it 'that has an argument with a &prefix (messagesplat)' do
 					parser.parse('blah:(&msg) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:prefix=>'&', :name=>"msg"}]}}]}}}
 				end
+
+				it 'that has an argument with a default value' do
+					parser.parse('blah:(arg: 10) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:default=>{:integer=>"10"}, :name=>"arg"}]}}]}}}
+				end
 			end
 
 			it 'with statements within the block' do

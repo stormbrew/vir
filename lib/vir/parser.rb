@@ -120,10 +120,10 @@ module Vir
     }
 
     rule(:block_arg) {
-      ((str('**') | str('*') | str('&')).as(:prefix).maybe >> symbol.as(:name) >> iws?)
+      (str('**') | str('*') | str('&')).as(:prefix).maybe >> symbol.as(:name) >> iws? >> (str(':') >> iws? >> expression.as(:default) >> iws?).maybe
     }
     rule(:block_comma_arg) {
-      (block_arg >> str(',') >> iws?)
+      block_arg >> str(',') >> iws?
     }
 
     rule(:block_args) {
