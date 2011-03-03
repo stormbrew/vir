@@ -21,6 +21,12 @@ module Vir
     rule(:ews) { (ws | br).repeat(1) }
     rule(:ews?) { ews.maybe }
 
+    # Line whitespace is any kind of whitespace on the same line (including comments).
+    # Use for stuff that shouldn't go to the next line, but still expects something
+    # more to complete the expression (eg. a >> lws >> '+' >> iws >> b)
+    rule(:lws) { (ws | comment.as(:inline_doc)).repeat(1) }
+    rule(:lws?) { lws.maybe }
+
     # Inner whitespace is space between elements of the same line.
     # It can include spaces, line breaks, and comments.
     rule(:iws) { (ws | br | comment.as(:inline_doc)).repeat(1) }
@@ -144,64 +150,69 @@ module Vir
       (str(':') >> iws? >> block_body).as(:default_block)
     }
     rule(:blocks) {
-      (default_block >> iws? >> (named_block >> iws?).repeat) |
-      (named_block >> iws?).repeat(1)
+      (default_block >> lws? >> (named_block >> lws?).repeat) |
+      (named_block >> lws?).repeat(1)
     }
 
     rule(:call_args) {
-      arglist >> iws? >> blocks.repeat(0,1).as(:blocks) |
+      arglist >> lws? >> blocks.repeat(0,1).as(:blocks) |
       blocks.repeat(1,1).as(:blocks)
     }
 
     rule(:call_expression) {
-      (((call_expression | unary_expression).as(:on) >> iws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> iws? >> call_args.maybe).as(:call) |
-      (symbol.as(:name).as(:ref) >> iws? >> call_args).as(:call) |
-      (unary_expression.as(:on).as(:ref) >> iws? >> call_args).as(:call) |
+      (((call_expression | unary_expression).as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
+      (symbol.as(:name).as(:ref) >> lws? >> call_args).as(:call) |
+      (unary_expression.as(:on).as(:ref) >> lws? >> call_args).as(:call) |
       unary_expression
     }
 
     rule(:array_index_expression) {
-      (call_expression.as(:from) >> (iws? >> str('[') >> iws? >> expression >> iws? >> str(']')).repeat(1).as(:index)).as(:array_op) |
+      (call_expression.as(:from) >> (lws? >> str('[') >> iws? >> expression >> iws? >> str(']')).repeat(1).as(:index)).as(:array_op) |
       call_expression
     }
 
     rule(:product_op_expression) {
-      (array_index_expression >> (iws? >> (str('*') | str('/') | str('%')).as(:op) >> iws? >> array_index_expression).repeat(1)).as(:product) |
+      (array_index_expression >> (lws? >> (str('*') | str('/') | str('%')).as(:op) >> iws? >> array_index_expression).repeat(1)).as(:product) |
       array_index_expression
     }
 
     rule(:sum_op_expression) {
-      (product_op_expression >> (iws? >> (str('+') | str('-')).as(:op) >> iws? >> product_op_expression).repeat(1)).as(:sum) |
+      (product_op_expression >> (lws? >> (str('+') | str('-')).as(:op) >> iws? >> product_op_expression).repeat(1)).as(:sum) |
       product_op_expression
     }
 
     rule(:bitshift_op_expression) {
-      (sum_op_expression >> (iws? >> (str('>>') | str('<<')).as(:op) >> iws? >> sum_op_expression).repeat(1)).as(:bitshift) |
+      (sum_op_expression >> (lws? >> (str('>>') | str('<<')).as(:op) >> iws? >> sum_op_expression).repeat(1)).as(:bitshift) |
       sum_op_expression
     }
 
     rule(:relational_op_expression) {
-      (bitshift_op_expression >> (iws? >> (str('>') | str('<') | str('<=') | str('>=')).as(:op) >> iws? >> bitshift_op_expression).repeat(1)).as(:relational) |
+      (bitshift_op_expression >> (lws? >> (str('>') | str('<') | str('<=') | str('>=')).as(:op) >> iws? >> bitshift_op_expression).repeat(1)).as(:relational) |
       bitshift_op_expression
     }
 
-    rule(:bitwise_op_expression) {
-      (relational_op_expression >> (iws? >> (str('&') | str('^') | str('|')).as(:op) >> iws? >> relational_op_expression).repeat(1)).as(:bitwise) |
+    rule(:equality_op_expression) {
+      (relational_op_expression >> (lws? >> (str('==') | str('!=')).as(:op) >> iws? >> relational_op_expression).repeat(1)).as(:equality) |
       relational_op_expression
     }
 
+    rule(:bitwise_op_expression) {
+      (equality_op_expression >> (lws? >> (str('&') | str('^') | str('|')).as(:op) >> iws? >> equality_op_expression).repeat(1)).as(:bitwise) |
+      equality_op_expression
+    }
+
     rule(:logical_op_expression) {
-      (bitwise_op_expression >> (iws? >> (str('&&') | str('||')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:logical) |
+      (bitwise_op_expression >> (lws? >> (str('&&') | str('||')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:logical) |
       bitwise_op_expression
     }
 
     rule(:assignment_expression) {
-      (logical_op_expression >> (iws? >> (str('=') | str('+=') | str('-=') | str('*=') | str('/=') | str('%=') | str('&=') | str('^=') | str('|=') | str('<<=') | str('>>=')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:assign) |
+      (logical_op_expression >> (lws? >> (str('=') | str('+=') | str('-=') | str('*=') | str('/=') | str('%=') | str('&=') | str('^=') | str('|=') | str('<<=') | str('>>=')).as(:op) >> iws? >> bitwise_op_expression).repeat(1)).as(:assign) |
       logical_op_expression
     }
 
     rule(:expression) {
-      logical_op_expression
+      assignment_expression
     }
 
     rule(:statement) {
