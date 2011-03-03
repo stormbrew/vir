@@ -127,6 +127,15 @@ describe Vir::Parser do
 				it 'that has an argument with a default value' do
 					parser.parse('blah:(arg: 10) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:default=>{:integer=>"10"}, :name=>"arg"}]}}]}}}
 				end
+
+				it 'that has an argument with a typespec' do
+					parser.parse('blah:(arg as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:lines=>[], :args=>[{:type=>{:symbol=>"integer"}, :name=>"arg"}]}}]}}}
+				end
+
+				it 'that has an argument with a default value and typespec' do
+					parser.parse('blah:(arg:10 as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:default_block=>{:args=>[{:name=>"arg", :default=>{:integer=>"10"}, :type=>{:symbol=>"integer"}}], :lines=>[]}}]}}}
+				end
+
 			end
 
 			it 'with statements within the block' do
