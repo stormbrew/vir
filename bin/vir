@@ -32,7 +32,11 @@ def parse(str)
   begin
     pp(parser.parse(str))
   rescue Parslet::ParseFailed => m
-    puts parser.root.error_tree
+    puts(m)
+    begin
+      puts parser.root.error_tree
+    rescue StackError,SystemStackError # fix these at some point.
+    end
   end
 end
 pp(options.eval)
