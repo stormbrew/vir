@@ -119,17 +119,24 @@ module Vir
       ews? >> tail_statement
     }
 
-    rule(:blockbody) {
+    rule(:block_body) {
       str('{') >> eol.maybe >> statement_sequence.repeat(0,1).as(:lines) >> iws? >> str('}')
     }
 
-    rule(:block) {
-      (expression.as(:name) >> iws? >> match(':') >> iws? >> blockbody).as(:block)
+    rule(:named_block) {
+      (unary_expression.as(:name) >> iws? >> str(':') >> iws? >> block_body).as(:block)
+    }
+    rule(:default_block) {
+      (str(':') >> iws? >> block_body).as(:default_block)
+    }
+    rule(:blocks) {
+      (default_block >> iws? >> (named_block >> iws?).repeat) |
+      (named_block >> iws?).repeat(1)
     }
 
     rule(:call_args) {
-      arglist >> iws? >> (block >> iws?).repeat.as(:blocks) |
-      (block >> iws?).repeat(1).as(:blocks)
+      arglist >> iws? >> blocks.repeat(0,1).as(:blocks) |
+      blocks.repeat(1,1).as(:blocks)
     }
 
     rule(:call_expression) {
