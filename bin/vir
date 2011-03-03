@@ -44,6 +44,6 @@ if (options.eval)
   parse(options.eval)
 elsif (ARGV.length > 0)
   ARGV.each do |f|
-    parse(f)
+    parse(File.read(f))
   end
 end
