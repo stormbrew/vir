@@ -119,8 +119,19 @@ module Vir
       ews? >> tail_statement
     }
 
+    rule(:block_simple_comma_arg) {
+      (symbol.as(:name) >> iws? >> str(',') >> iws?)
+    }
+    rule(:block_simple_tail_arg) {
+      (symbol.as(:name) >> iws?)
+    }
+
+    rule(:block_args) {
+      str('(') >> iws? >> (block_simple_comma_arg.repeat >> block_simple_tail_arg).repeat(0,1).as(:args) >> str(')')
+    }
+
     rule(:block_body) {
-      str('{') >> eol.maybe >> statement_sequence.repeat(0,1).as(:lines) >> iws? >> str('}')
+      block_args.maybe >> iws? >> str('{') >> eol.maybe >> statement_sequence.repeat(0,1).as(:lines) >> iws? >> str('}')
     }
 
     rule(:named_block) {
