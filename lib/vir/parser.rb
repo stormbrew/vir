@@ -140,7 +140,8 @@ module Vir
     }
 
     rule(:block_body) {
-      block_args.maybe >> iws? >> str('{') >> eol.maybe >> statement_sequence.repeat(0,1).as(:lines) >> iws? >> str('}')
+      block_args.maybe >> iws? >> str('{') >> eol.maybe >> statement_sequence.repeat(0,1).as(:lines) >> iws? >> str('}') |
+      str('&').maybe >> iws? >> value_expression.as(:value)
     }
 
     rule(:block) {
