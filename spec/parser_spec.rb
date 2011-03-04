@@ -131,7 +131,6 @@ describe Vir::Parser do
 				it 'that has an argument with a default value and typespec' do
 					parser.parse('blah do:(arg:10 as integer) {}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:name=>{:symbol=>"do"}, :args=>[{:name=>"arg", :default=>{:integer=>"10"}, :type=>{:symbol=>"integer"}}], :lines=>[]}}]}}}
 				end
-
 			end
 
 			it 'with statements within the block' do
@@ -161,6 +160,19 @@ describe Vir::Parser do
 
 				more_stuff
 				}').should == {:statement=>{:call=>{:ref=>{:name=>"blah"}, :blocks=>[{:block=>{:lines=>[{:statement=>{:doc=>[], :symbol=>"stuff"}}, {:statement=>{:doc=>[], :symbol=>"more_stuff"}}], :name=>{:symbol=>"do"}}}]}, :doc=>[]}}
+			end
+
+			it 'with a value expression as the "block"' do
+				parser.parse('if do: true').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"if"}, :blocks=>[{:block=>{:value=>{:true=>"true"}, :name=>{:symbol=>"do"}}}]}}}
+			end
+			it 'with multiple blocks that are value expressions' do
+				parser.parse('if do: true else: false').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"if"}, :blocks=>[{:block=>{:value=>{:true=>"true"}, :name=>{:symbol=>"do"}}}, {:block=>{:value=>{:false=>"false"}, :name=>{:symbol=>"else"}}}]}}}
+			end
+			it 'with a value expression prefixed by an ampersand' do
+				parser.parse('if do: &true').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"if"}, :blocks=>[{:block=>{:value=>{:true=>"true"}, :name=>{:symbol=>"do"}}}]}}}
+			end
+			it 'with a hash value expression prefixed by an ampersand' do
+				parser.parse('if do: &{a:b}').should == {:statement=>{:doc=>[], :call=>{:ref=>{:name=>"if"}, :blocks=>[{:block=>{:value=>{:map=>{:entries=>[{:key=>{:symbol=>"a"}, :value=>{:symbol=>"b"}}]}}, :name=>{:symbol=>"do"}}}]}}}
 			end
 		end
 	end
