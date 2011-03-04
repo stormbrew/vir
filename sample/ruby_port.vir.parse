@@ -1,0 +1,852 @@
+--- 
+:statement: 
+  :doc: 
+  - :text: !ruby/object:Parslet::Slice 
+      offset: 1
+      parent: &id001 !ruby/object:Parslet::Slice 
+        offset: 0
+        parent: 
+        str: |
+          # A tree structure that contains parse error messages. This can be used to
+          # give the user a detailed report on what went wrong during a parse. 
+          #
+          class(Parslet) ErrorTree: {
+            # The parslet that caused the error stored here. 
+            attr_reader(parslet)
+            # All errors that were encountered when parsing part of this +parslet+. 
+            attr_reader(children)
+              
+            def initialize:(parslet, *children) { # :nodoc:
+              @parslet = $parslet
+              @children = $children.compact
+            }
+            
+            def nodes: {
+              1 + @children.inject(0) do:(sum, node) { $sum + $node.nodes }
+            }
+            
+            def cause: {
+              @parslet.cause || "Unknown error in #{parslet.inspect}"
+            }
+            
+            # Returns an ascii tree representation of the causes of this node and its
+            # children. 
+            #
+            def ascii_tree: {
+              StringIO.new.tap do:(io) {
+                recursive_ascii_tree(@, $io, [true]) 
+              }.string
+            }
+            alias(to_s, ascii_tree)
+          
+            def(private) recursive_ascii_tree:(node, stream, curved) {# :nodoc:
+              append_prefix($stream, $curved)
+              $stream.puts($node.cause)
+              
+              $node.children.each do:(child) {
+                $last_child = ($node.children.last == $child)
+          
+                recursive_ascii_tree($child, $stream, $curved + [$last_child])
+              }
+            }
+            def(private) append_prefix:(stream, curved) { # :nodoc:
+              $curved[0..-2].each do:(c) {
+                $stream.print(if($c) then: "   " else: "|  ")
+              }
+              $stream.print(if($curved.last) then: "`- " else: "|- ")
+            }
+          }
+
+      str: " A tree structure that contains parse error messages. This can be used to"
+  - :text: !ruby/object:Parslet::Slice 
+      offset: 76
+      parent: *id001
+      str: " give the user a detailed report on what went wrong during a parse. "
+  - :text: []
+
+  :call: 
+    :ref: 
+      :name: !ruby/object:Parslet::Slice 
+        offset: 147
+        parent: *id001
+        str: class
+    :args: 
+      :symbol: !ruby/object:Parslet::Slice 
+        offset: 153
+        parent: *id001
+        str: Parslet
+    :blocks: 
+    - :block: 
+        :name: 
+          :symbol: !ruby/object:Parslet::Slice 
+            offset: 162
+            parent: *id001
+            str: ErrorTree
+        :lines: 
+        - :statement: 
+            :doc: 
+            - :text: !ruby/object:Parslet::Slice 
+                offset: 178
+                parent: *id001
+                str: " The parslet that caused the error stored here. "
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 229
+                  parent: *id001
+                  str: attr_reader
+              :args: 
+                :symbol: !ruby/object:Parslet::Slice 
+                  offset: 241
+                  parent: *id001
+                  str: parslet
+              :blocks: []
+
+        - :statement: 
+            :doc: 
+            - :text: !ruby/object:Parslet::Slice 
+                offset: 253
+                parent: *id001
+                str: " All errors that were encountered when parsing part of this +parslet+. "
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 327
+                  parent: *id001
+                  str: attr_reader
+              :args: 
+                :symbol: !ruby/object:Parslet::Slice 
+                  offset: 339
+                  parent: *id001
+                  str: children
+              :blocks: []
+
+        - :statement: 
+            :doc: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 356
+                  parent: *id001
+                  str: def
+              :blocks: 
+              - :block: 
+                - :name: 
+                    :symbol: !ruby/object:Parslet::Slice 
+                      offset: 360
+                      parent: *id001
+                      str: initialize
+                - :args: 
+                  - :name: !ruby/object:Parslet::Slice 
+                      offset: 372
+                      parent: *id001
+                      str: parslet
+                  - :prefix: !ruby/object:Parslet::Slice 
+                      offset: 381
+                      parent: *id001
+                      str: "*"
+                    :name: !ruby/object:Parslet::Slice 
+                      offset: 382
+                      parent: *id001
+                      str: children
+                - :inline_doc: 
+                    :text: !ruby/object:Parslet::Slice 
+                      offset: 395
+                      parent: *id001
+                      str: " :nodoc:"
+                - :lines: 
+                  - :statement: 
+                      :assign: 
+                      - :instance_var: 
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 409
+                            parent: *id001
+                            str: parslet
+                      - :local_var: 
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 420
+                            parent: *id001
+                            str: parslet
+                        :op: !ruby/object:Parslet::Slice 
+                          offset: 417
+                          parent: *id001
+                          str: "="
+                      :doc: []
+
+                  - :statement: 
+                      :assign: 
+                      - :instance_var: 
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 433
+                            parent: *id001
+                            str: children
+                      - :op: !ruby/object:Parslet::Slice 
+                          offset: 442
+                          parent: *id001
+                          str: "="
+                        :call: 
+                          :ref: 
+                            :on: 
+                              :local_var: 
+                                :name: !ruby/object:Parslet::Slice 
+                                  offset: 445
+                                  parent: *id001
+                                  str: children
+                            :name: !ruby/object:Parslet::Slice 
+                              offset: 454
+                              parent: *id001
+                              str: compact
+                      :doc: []
+
+        - :statement: 
+            :doc: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 471
+                  parent: *id001
+                  str: def
+              :blocks: 
+              - :block: 
+                  :name: 
+                    :symbol: !ruby/object:Parslet::Slice 
+                      offset: 475
+                      parent: *id001
+                      str: nodes
+                  :lines: 
+                  - :statement: 
+                      :sum: 
+                      - :integer: !ruby/object:Parslet::Slice 
+                          offset: 488
+                          parent: *id001
+                          str: "1"
+                      - :op: !ruby/object:Parslet::Slice 
+                          offset: 490
+                          parent: *id001
+                          str: +
+                        :call: 
+                          :ref: 
+                            :on: 
+                              :instance_var: 
+                                :name: !ruby/object:Parslet::Slice 
+                                  offset: 493
+                                  parent: *id001
+                                  str: children
+                            :name: !ruby/object:Parslet::Slice 
+                              offset: 502
+                              parent: *id001
+                              str: inject
+                          :args: 
+                            :integer: !ruby/object:Parslet::Slice 
+                              offset: 509
+                              parent: *id001
+                              str: "0"
+                          :blocks: 
+                          - :block: 
+                              :args: 
+                              - :name: !ruby/object:Parslet::Slice 
+                                  offset: 516
+                                  parent: *id001
+                                  str: sum
+                              - :name: !ruby/object:Parslet::Slice 
+                                  offset: 521
+                                  parent: *id001
+                                  str: node
+                              :name: 
+                                :symbol: !ruby/object:Parslet::Slice 
+                                  offset: 512
+                                  parent: *id001
+                                  str: do
+                              :lines: 
+                              - :statement: 
+                                  :sum: 
+                                  - :local_var: 
+                                      :name: !ruby/object:Parslet::Slice 
+                                        offset: 530
+                                        parent: *id001
+                                        str: sum
+                                  - :op: !ruby/object:Parslet::Slice 
+                                      offset: 534
+                                      parent: *id001
+                                      str: +
+                                    :call: 
+                                      :ref: 
+                                        :on: 
+                                          :local_var: 
+                                            :name: !ruby/object:Parslet::Slice 
+                                              offset: 537
+                                              parent: *id001
+                                              str: node
+                                        :name: !ruby/object:Parslet::Slice 
+                                          offset: 542
+                                          parent: *id001
+                                          str: nodes
+                                  :doc: []
+
+                      :doc: []
+
+        - :statement: 
+            :doc: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 559
+                  parent: *id001
+                  str: def
+              :blocks: 
+              - :block: 
+                  :name: 
+                    :symbol: !ruby/object:Parslet::Slice 
+                      offset: 563
+                      parent: *id001
+                      str: cause
+                  :lines: 
+                  - :statement: 
+                      :doc: []
+
+                      :logical: 
+                      - :call: 
+                          :ref: 
+                            :on: 
+                              :instance_var: 
+                                :name: !ruby/object:Parslet::Slice 
+                                  offset: 577
+                                  parent: *id001
+                                  str: parslet
+                            :name: !ruby/object:Parslet::Slice 
+                              offset: 585
+                              parent: *id001
+                              str: cause
+                      - :op: !ruby/object:Parslet::Slice 
+                          offset: 591
+                          parent: *id001
+                          str: "||"
+                        :string: !ruby/object:Parslet::Slice 
+                          offset: 594
+                          parent: *id001
+                          str: "\"Unknown error in #{parslet.inspect}\""
+        - :statement: 
+            :doc: 
+            - :text: !ruby/object:Parslet::Slice 
+                offset: 642
+                parent: *id001
+                str: " Returns an ascii tree representation of the causes of this node and its"
+            - :text: !ruby/object:Parslet::Slice 
+                offset: 718
+                parent: *id001
+                str: " children. "
+            - :text: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 736
+                  parent: *id001
+                  str: def
+              :blocks: 
+              - :block: 
+                  :name: 
+                    :symbol: !ruby/object:Parslet::Slice 
+                      offset: 740
+                      parent: *id001
+                      str: ascii_tree
+                  :lines: 
+                  - :statement: 
+                      :doc: []
+
+                      :call: 
+                        :ref: 
+                          :on: 
+                            :call: 
+                              :ref: 
+                                :on: 
+                                  :call: 
+                                    :ref: 
+                                      :on: 
+                                        :symbol: !ruby/object:Parslet::Slice 
+                                          offset: 758
+                                          parent: *id001
+                                          str: StringIO
+                                      :name: !ruby/object:Parslet::Slice 
+                                        offset: 767
+                                        parent: *id001
+                                        str: new
+                                :name: !ruby/object:Parslet::Slice 
+                                  offset: 771
+                                  parent: *id001
+                                  str: tap
+                              :blocks: 
+                              - :block: 
+                                  :args: 
+                                  - :name: !ruby/object:Parslet::Slice 
+                                      offset: 779
+                                      parent: *id001
+                                      str: io
+                                  :name: 
+                                    :symbol: !ruby/object:Parslet::Slice 
+                                      offset: 775
+                                      parent: *id001
+                                      str: do
+                                  :lines: 
+                                  - :statement: 
+                                      :doc: []
+
+                                      :call: 
+                                        :ref: 
+                                          :name: !ruby/object:Parslet::Slice 
+                                            offset: 791
+                                            parent: *id001
+                                            str: recursive_ascii_tree
+                                        :args: 
+                                        - :self: !ruby/object:Parslet::Slice 
+                                            offset: 812
+                                            parent: *id001
+                                            str: "@"
+                                        - :local_var: 
+                                            :name: !ruby/object:Parslet::Slice 
+                                              offset: 816
+                                              parent: *id001
+                                              str: io
+                                        - :list: 
+                                            :entries: 
+                                            - :true: !ruby/object:Parslet::Slice 
+                                                offset: 821
+                                                parent: *id001
+                                                str: "true"
+                                        :blocks: []
+
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 835
+                            parent: *id001
+                            str: string
+        - :statement: 
+            :doc: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 848
+                  parent: *id001
+                  str: alias
+              :args: 
+              - :symbol: !ruby/object:Parslet::Slice 
+                  offset: 854
+                  parent: *id001
+                  str: to_s
+              - :symbol: !ruby/object:Parslet::Slice 
+                  offset: 860
+                  parent: *id001
+                  str: ascii_tree
+              :blocks: []
+
+        - :statement: 
+            :doc: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 875
+                  parent: *id001
+                  str: def
+              :args: 
+                :symbol: !ruby/object:Parslet::Slice 
+                  offset: 879
+                  parent: *id001
+                  str: private
+              :blocks: 
+              - :block: 
+                - :name: 
+                    :symbol: !ruby/object:Parslet::Slice 
+                      offset: 888
+                      parent: *id001
+                      str: recursive_ascii_tree
+                - :args: 
+                  - :name: !ruby/object:Parslet::Slice 
+                      offset: 910
+                      parent: *id001
+                      str: node
+                  - :name: !ruby/object:Parslet::Slice 
+                      offset: 916
+                      parent: *id001
+                      str: stream
+                  - :name: !ruby/object:Parslet::Slice 
+                      offset: 924
+                      parent: *id001
+                      str: curved
+                - :inline_doc: 
+                    :text: !ruby/object:Parslet::Slice 
+                      offset: 934
+                      parent: *id001
+                      str: " :nodoc:"
+                - :lines: 
+                  - :statement: 
+                      :doc: []
+
+                      :call: 
+                        :ref: 
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 947
+                            parent: *id001
+                            str: append_prefix
+                        :args: 
+                        - :local_var: 
+                            :name: !ruby/object:Parslet::Slice 
+                              offset: 962
+                              parent: *id001
+                              str: stream
+                        - :local_var: 
+                            :name: !ruby/object:Parslet::Slice 
+                              offset: 971
+                              parent: *id001
+                              str: curved
+                        :blocks: []
+
+                  - :statement: 
+                      :doc: []
+
+                      :call: 
+                        :ref: 
+                          :on: 
+                            :local_var: 
+                              :name: !ruby/object:Parslet::Slice 
+                                offset: 984
+                                parent: *id001
+                                str: stream
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 991
+                            parent: *id001
+                            str: puts
+                        :args: 
+                          :call: 
+                            :ref: 
+                              :on: 
+                                :local_var: 
+                                  :name: !ruby/object:Parslet::Slice 
+                                    offset: 997
+                                    parent: *id001
+                                    str: node
+                              :name: !ruby/object:Parslet::Slice 
+                                offset: 1002
+                                parent: *id001
+                                str: cause
+                        :blocks: []
+
+                  - :statement: 
+                      :doc: []
+
+                      :call: 
+                        :ref: 
+                          :on: 
+                            :call: 
+                              :ref: 
+                                :on: 
+                                  :local_var: 
+                                    :name: !ruby/object:Parslet::Slice 
+                                      offset: 1019
+                                      parent: *id001
+                                      str: node
+                                :name: !ruby/object:Parslet::Slice 
+                                  offset: 1024
+                                  parent: *id001
+                                  str: children
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 1033
+                            parent: *id001
+                            str: each
+                        :blocks: 
+                        - :block: 
+                            :args: 
+                            - :name: !ruby/object:Parslet::Slice 
+                                offset: 1042
+                                parent: *id001
+                                str: child
+                            :name: 
+                              :symbol: !ruby/object:Parslet::Slice 
+                                offset: 1038
+                                parent: *id001
+                                str: do
+                            :lines: 
+                            - :statement: 
+                                :assign: 
+                                - :local_var: 
+                                    :name: !ruby/object:Parslet::Slice 
+                                      offset: 1058
+                                      parent: *id001
+                                      str: last_child
+                                - :op: !ruby/object:Parslet::Slice 
+                                    offset: 1069
+                                    parent: *id001
+                                    str: "="
+                                  :equality: 
+                                  - :call: 
+                                      :ref: 
+                                        :on: 
+                                          :call: 
+                                            :ref: 
+                                              :on: 
+                                                :local_var: 
+                                                  :name: !ruby/object:Parslet::Slice 
+                                                    offset: 1073
+                                                    parent: *id001
+                                                    str: node
+                                              :name: !ruby/object:Parslet::Slice 
+                                                offset: 1078
+                                                parent: *id001
+                                                str: children
+                                        :name: !ruby/object:Parslet::Slice 
+                                          offset: 1087
+                                          parent: *id001
+                                          str: last
+                                  - :local_var: 
+                                      :name: !ruby/object:Parslet::Slice 
+                                        offset: 1096
+                                        parent: *id001
+                                        str: child
+                                    :op: !ruby/object:Parslet::Slice 
+                                      offset: 1092
+                                      parent: *id001
+                                      str: ==
+                                :doc: []
+
+                            - :statement: 
+                                :doc: []
+
+                                :call: 
+                                  :ref: 
+                                    :name: !ruby/object:Parslet::Slice 
+                                      offset: 1110
+                                      parent: *id001
+                                      str: recursive_ascii_tree
+                                  :args: 
+                                  - :local_var: 
+                                      :name: !ruby/object:Parslet::Slice 
+                                        offset: 1132
+                                        parent: *id001
+                                        str: child
+                                  - :local_var: 
+                                      :name: !ruby/object:Parslet::Slice 
+                                        offset: 1140
+                                        parent: *id001
+                                        str: stream
+                                  - :sum: 
+                                    - :local_var: 
+                                        :name: !ruby/object:Parslet::Slice 
+                                          offset: 1149
+                                          parent: *id001
+                                          str: curved
+                                    - :op: !ruby/object:Parslet::Slice 
+                                        offset: 1156
+                                        parent: *id001
+                                        str: +
+                                      :list: 
+                                        :entries: 
+                                        - :local_var: 
+                                            :name: !ruby/object:Parslet::Slice 
+                                              offset: 1160
+                                              parent: *id001
+                                              str: last_child
+                                  :blocks: []
+
+        - :statement: 
+            :doc: []
+
+            :call: 
+              :ref: 
+                :name: !ruby/object:Parslet::Slice 
+                  offset: 1185
+                  parent: *id001
+                  str: def
+              :args: 
+                :symbol: !ruby/object:Parslet::Slice 
+                  offset: 1189
+                  parent: *id001
+                  str: private
+              :blocks: 
+              - :block: 
+                - :name: 
+                    :symbol: !ruby/object:Parslet::Slice 
+                      offset: 1198
+                      parent: *id001
+                      str: append_prefix
+                - :args: 
+                  - :name: !ruby/object:Parslet::Slice 
+                      offset: 1213
+                      parent: *id001
+                      str: stream
+                  - :name: !ruby/object:Parslet::Slice 
+                      offset: 1221
+                      parent: *id001
+                      str: curved
+                - :inline_doc: 
+                    :text: !ruby/object:Parslet::Slice 
+                      offset: 1232
+                      parent: *id001
+                      str: " :nodoc:"
+                - :lines: 
+                  - :statement: 
+                      :doc: []
+
+                      :call: 
+                        :ref: 
+                          :on: 
+                            :array_op: 
+                              :index: 
+                              - :range: 
+                                  :high: 
+                                    :prefix_op: 
+                                      :op: !ruby/object:Parslet::Slice 
+                                        offset: 1256
+                                        parent: *id001
+                                        str: "-"
+                                      :integer: !ruby/object:Parslet::Slice 
+                                        offset: 1257
+                                        parent: *id001
+                                        str: "2"
+                                  :low: 
+                                    :integer: !ruby/object:Parslet::Slice 
+                                      offset: 1253
+                                      parent: *id001
+                                      str: "0"
+                                  :op: !ruby/object:Parslet::Slice 
+                                    offset: 1254
+                                    parent: *id001
+                                    str: ..
+                              :from: 
+                                :local_var: 
+                                  :name: !ruby/object:Parslet::Slice 
+                                    offset: 1246
+                                    parent: *id001
+                                    str: curved
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 1260
+                            parent: *id001
+                            str: each
+                        :blocks: 
+                        - :block: 
+                            :args: 
+                            - :name: !ruby/object:Parslet::Slice 
+                                offset: 1269
+                                parent: *id001
+                                str: c
+                            :name: 
+                              :symbol: !ruby/object:Parslet::Slice 
+                                offset: 1265
+                                parent: *id001
+                                str: do
+                            :lines: 
+                            - :statement: 
+                                :doc: []
+
+                                :call: 
+                                  :ref: 
+                                    :on: 
+                                      :local_var: 
+                                        :name: !ruby/object:Parslet::Slice 
+                                          offset: 1281
+                                          parent: *id001
+                                          str: stream
+                                    :name: !ruby/object:Parslet::Slice 
+                                      offset: 1288
+                                      parent: *id001
+                                      str: print
+                                  :args: 
+                                    :call: 
+                                      :ref: 
+                                        :name: !ruby/object:Parslet::Slice 
+                                          offset: 1294
+                                          parent: *id001
+                                          str: if
+                                      :args: 
+                                        :local_var: 
+                                          :name: !ruby/object:Parslet::Slice 
+                                            offset: 1298
+                                            parent: *id001
+                                            str: c
+                                      :blocks: 
+                                      - :block: 
+                                          :value: 
+                                            :string: !ruby/object:Parslet::Slice 
+                                              offset: 1307
+                                              parent: *id001
+                                              str: "\"   \""
+                                          :name: 
+                                            :symbol: !ruby/object:Parslet::Slice 
+                                              offset: 1301
+                                              parent: *id001
+                                              str: then
+                                      - :block: 
+                                          :value: 
+                                            :string: !ruby/object:Parslet::Slice 
+                                              offset: 1319
+                                              parent: *id001
+                                              str: "\"|  \""
+                                          :name: 
+                                            :symbol: !ruby/object:Parslet::Slice 
+                                              offset: 1313
+                                              parent: *id001
+                                              str: else
+                                  :blocks: []
+
+                  - :statement: 
+                      :doc: []
+
+                      :call: 
+                        :ref: 
+                          :on: 
+                            :local_var: 
+                              :name: !ruby/object:Parslet::Slice 
+                                offset: 1337
+                                parent: *id001
+                                str: stream
+                          :name: !ruby/object:Parslet::Slice 
+                            offset: 1344
+                            parent: *id001
+                            str: print
+                        :args: 
+                          :call: 
+                            :ref: 
+                              :name: !ruby/object:Parslet::Slice 
+                                offset: 1350
+                                parent: *id001
+                                str: if
+                            :args: 
+                              :call: 
+                                :ref: 
+                                  :on: 
+                                    :local_var: 
+                                      :name: !ruby/object:Parslet::Slice 
+                                        offset: 1354
+                                        parent: *id001
+                                        str: curved
+                                  :name: !ruby/object:Parslet::Slice 
+                                    offset: 1361
+                                    parent: *id001
+                                    str: last
+                            :blocks: 
+                            - :block: 
+                                :value: 
+                                  :string: !ruby/object:Parslet::Slice 
+                                    offset: 1373
+                                    parent: *id001
+                                    str: "\"`- \""
+                                :name: 
+                                  :symbol: !ruby/object:Parslet::Slice 
+                                    offset: 1367
+                                    parent: *id001
+                                    str: then
+                            - :block: 
+                                :value: 
+                                  :string: !ruby/object:Parslet::Slice 
+                                    offset: 1385
+                                    parent: *id001
+                                    str: "\"|- \""
+                                :name: 
+                                  :symbol: !ruby/object:Parslet::Slice 
+                                    offset: 1379
+                                    parent: *id001
+                                    str: else
+                        :blocks: []
+

@@ -7,7 +7,7 @@ if ($0 == 'bin/vir')
   require 'bundler/setup'
 end
 
-require 'pp'
+require 'set'
 require 'user_input/option_parser'
 
 require 'vir/version'
@@ -15,6 +15,11 @@ require 'vir/parser'
 
 options = UserInput::OptionParser.new do |c|
   c.argument 'e', 'eval', "Code to evaluate", nil, String
+  c.argument 'F', 'format', "Format to output tree information in for -P and -A. Can be pp|yaml|json", :pp, Set[:pp, :yaml, :json]
+  c.argument 'O', 'output-tree', "Where to output the tree from -P, -A, or the bytecode from -C, if not stdout.", nil, String 
+  c.flag 'P', 'parse-tree', "Show parse tree rather than evaluate. Currently this is the default."
+  c.flag 'A', 'ast', "Show the abstract syntax tree rather than evaluate."
+  c.flag 'C', 'compiled', "Show the compiled output rather than evaluate."
   c.gap
   c.flag 'v', 'version', "Print version" do
     puts(Vir::VERSION.join('.'))
@@ -27,10 +32,45 @@ options = UserInput::OptionParser.new do |c|
 end
 options.parse!(ARGV)
 
-def parse(str)
+def print_tree(options, tree)
+  output = $stdout
+  begin
+    if (options.output_tree)
+      output = File.open(options.output_tree, "w")
+    end
+
+    case options.format
+    when :pp
+      require 'pp'
+      PP.pp(tree, output)
+    when :yaml
+      require 'yaml'
+      output.puts(tree.to_yaml)
+    when :json
+      require 'json'
+      output.puts(tree.to_json(:max_nesting=>100))
+    end
+  ensure
+    output.close if (options.output_tree)
+  end
+end
+
+def parse(options, str)
   parser = Vir::Parser.new
   begin
-    pp(parser.parse(str))
+    tree = parser.parse(str)
+    if (true || options.parse_tree?)
+      print_tree(options, tree)
+    end
+    if (options.ast?)
+      puts("Error: Outputing AST not supported yet.")
+    end
+    if (options.compiled?)
+      puts("Error: Outputing compiler output not supported yet.")
+    end
+    if (false && !options.parse_tree? && !options.ast? && !options.compiled?)
+      puts("Error: Running code not supported yet.")
+    end
   rescue Parslet::ParseFailed => m
     puts(m)
     begin
@@ -39,11 +79,11 @@ def parse(str)
     end
   end
 end
-pp(options.eval)
+
 if (options.eval)
-  parse(options.eval)
+  parse(options, options.eval)
 elsif (ARGV.length > 0)
   ARGV.each do |f|
-    parse(File.read(f))
+    parse(options, File.read(f))
   end
 end
