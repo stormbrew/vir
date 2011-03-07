@@ -157,10 +157,8 @@ module Vir
     }
 
     rule(:call_expression) {
-      ((call_expression | value_expression).as(:from) >> (lws? >> str('[') >> iws? >> expression >> iws? >> str(']')).repeat(1).as(:index)).as(:array_op) |
-
+      (call_expression.as(:from) >> (lws? >> str('[') >> iws? >> expression >> iws? >> str(']')).repeat(1).as(:index)).as(:array_op) |
       ((call_expression.as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
-      ((value_expression.as(:on) >> lws? >> str('.') >> iws? >> symbol.as(:name)).as(:ref) >> lws? >> call_args.maybe).as(:call) |
       (symbol.as(:name).as(:ref) >> lws? >> call_args).as(:call) |
       (value_expression.as(:on).as(:ref) >> lws? >> call_args_with_arglist).as(:call) |
       value_expression
